@@ -13,7 +13,7 @@ class ZabbixMethodManager(ConnManager):
 		)
 		self.password = "".join(
 			chr(x - 1) for x in map(ord, [j for j in self.ciphertext])
-		).strip('VWXY')
+		).strip('WXYZ')
 		super(ZabbixMethodManager, self).__init__(self.username, self.password)
 		self.id = 0
 		
