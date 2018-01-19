@@ -44,17 +44,8 @@ class CredentialStore(object):
 		self.conn.hmset(
 			j.get(storetype), memvalue
 		)
-	
-	def getCredentials(self, memvalue, storetype):
-		if not isinstance(memvalue, (dict, list)):
-			print "Invalid Memory Cache Type: {}".format(
-				type(memvalue)
-			)
-		j = self.keystore()
-		return self.conn.hmget(
-			j.get(storetype), memvalue
-		)
-	
+
+
 class ConnectionStart(zb.ZabbixAPI):
 	
 	def __init__(self, host='https://swzabbix.usa.systewmare.com'):
