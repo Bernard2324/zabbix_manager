@@ -1,4 +1,4 @@
 pycrypto
 pyzabbix
 redis
-
+redis-server
