@@ -1,2 +1,4 @@
 pycrypto
 pyzabbix
+redis
+
