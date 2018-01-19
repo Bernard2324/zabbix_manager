@@ -1,10 +1,60 @@
 #!/usr/bin/env python
 
 import pyzabbix as zb
-from requests import Session
+import redis, sys
+from pyzabbix import ZabbixAPIException
+from requests import Session, exceptions
 from zabexceptions import *
 
+try:
+	import subprocess
+	if any([ # if any is true, I know it 'check_output' is at least present and I can manually start redis-server
+		'check_output' in subprocess.__dict__.keys(),
+		subprocess.check_output(['pidof', 'redis-server'])
+	]):
+		raise InvalidModule("Invalid Module Subprocess:  No 'check_output' method\n")
+except InvalidModule:
+	print "Attempting to start redis-server"
+	cmds = ['redis-server', '--port 10000', '--daemonize yes']
+	redisstart = subprocess.Popen(cmds).communicate()
+	if not subprocess.check_output (['pidof', 'redis-server']):
+		sys.exit("Failed to Start Redis-Server")
 
+
+class CredentialStore(object):
+	"""
+	Decided not to instantiate redis connection.  This is to avoid conflict with port 10000
+	"""
+	def redisConnection(self):
+		self.conn = redis.Redis('localhost', 10000)
+		
+	def keystore(self):
+		return {
+			'password': 'passwd',
+			'username': 'usern',
+			'secretkeys': 'secret'
+		}
+		
+	def storeCredentials(self, memvalue, storetype):
+		if not isinstance(memvalue, (dict, list)):
+			print "Invalid Memory Cache Type: {}".format(
+				type(memvalue)
+			)
+		j = self.keystore()
+		self.conn.hmset(
+			j.get(storetype), memvalue
+		)
+	
+	def getCredentials(self, memvalue, storetype):
+		if not isinstance(memvalue, (dict, list)):
+			print "Invalid Memory Cache Type: {}".format(
+				type(memvalue)
+			)
+		j = self.keystore()
+		return self.conn.hmget(
+			j.get(storetype), memvalue
+		)
+	
 class ConnectionStart(zb.ZabbixAPI):
 	
 	def __init__(self, host='https://swzabbix.usa.systewmare.com'):
@@ -18,10 +68,10 @@ class ConnectionStart(zb.ZabbixAPI):
 			super(ConnectionStart, self).__init__(server=host, session=self.sess)
 			# Once we instantiate the ZabbixAPI, we can modify self.url
 			self.url = host + 'zabbix/api_jsonrpc.php'
-			self.timeout = None
-		except (ZabbixConnection, StandardError):
+			self.timeout = 25
+		except (exceptions.ConnectionError, ZabbixConnection, ZabbixAPIException):
 			print "Failed to Connect To Host!\n"
-	
+
 
 class ConnManager(object):
 	

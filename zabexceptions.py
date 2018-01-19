@@ -23,4 +23,5 @@ class ZabbixEmptyResponse(Exception):
 class ZabbixGeneric(Exception):
 	pass
 
-
+class InvalidModule(Exception):
+	pass
