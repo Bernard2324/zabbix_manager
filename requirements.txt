@@ -2,3 +2,4 @@ pycrypto
 pyzabbix
 redis
 redis-server
+requests

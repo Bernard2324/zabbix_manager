@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import pyzabbix as zb
-import redis, sys
+import redis
+import sys
 from pyzabbix import ZabbixAPIException
 from requests import Session, exceptions
 from zabexceptions import *
