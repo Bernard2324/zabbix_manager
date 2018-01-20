@@ -7,19 +7,19 @@ from pyzabbix import ZabbixAPIException
 from requests import Session, exceptions
 from zabexceptions import *
 
+# if any is true, I know that 'check_output' is at least present and I can manually start redis-server
 try:
 	import subprocess
-	if any([ # if any is true, I know it 'check_output' is at least present and I can manually start redis-server
-		'check_output' in subprocess.__dict__.keys(),
-		subprocess.check_output(['pidof', 'redis-server'])
-	]):
+	if not any([ 'check_output' in subprocess.__dict__.keys(),
+		subprocess.check_output(['pidof', 'redis-server'] is not None)]):
 		raise InvalidModule("Invalid Module Subprocess:  No 'check_output' method\n")
-except InvalidModule:
 	print "Attempting to start redis-server"
 	cmds = ['redis-server', '--port 10000', '--daemonize yes']
 	redisstart = subprocess.Popen(cmds).communicate()
 	if not subprocess.check_output (['pidof', 'redis-server']):
 		sys.exit("Failed to Start Redis-Server")
+except InvalidModule:
+	print "Failed to Load Subprocess"
 
 
 class CredentialStore(object):
