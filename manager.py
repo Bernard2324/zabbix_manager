@@ -11,7 +11,7 @@ class ZabbixMethodManager(ConnManager):
 		self.rediscredentials = CredentialStore()
 		self.rediscredentials.redisConnection()
 		self.rediscredentials.storeCredentials({self.username: self.username}, 'username')
-		self.username = 'maurice.green'
+		self.username = 'firstname.lastname'
 		self.ciphertext = self.passwordManager(
 			raw_input("Enter Secret Key: \n")
 		)
